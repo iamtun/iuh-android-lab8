@@ -31,6 +31,7 @@ public class SignIn extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
 
+        //items
         txtEmail = findViewById(R.id.editTextEmailSignIn);
         txtPassword = findViewById(R.id.editTextPassWordSignIn);
         btnSignIn = findViewById(R.id.btnSignIn_SignIn);
@@ -66,6 +67,7 @@ public class SignIn extends AppCompatActivity {
         }
     }
 
+    //function execute sign in by email and password if true then move face screen
     private void startSignIn() {
         //letuan19431791.iuh@gmail.com - 22052001
         String email = txtEmail.getText().toString();
