@@ -1,4 +1,4 @@
-package fit.android.lab8_fire_base;
+package fit.android.lab8_fire_base.activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,6 +17,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
+import fit.android.lab8_fire_base.R;
 
 public class Register extends AppCompatActivity {
     private static final String TAG = "RegisterActivity";

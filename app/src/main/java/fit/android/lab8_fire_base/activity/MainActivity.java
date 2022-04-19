@@ -1,4 +1,4 @@
-package fit.android.lab8_fire_base;
+package fit.android.lab8_fire_base.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+
+import fit.android.lab8_fire_base.R;
 
 public class MainActivity extends AppCompatActivity {
     private Button btnSignIn;

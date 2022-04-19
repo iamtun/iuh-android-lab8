@@ -10,16 +10,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Lab8_fire_base">
         <activity
-            android:name=".FaceScreen"
+            android:name=".activity.FaceScreen"
             android:exported="false" />
         <activity
-            android:name=".Register"
+            android:name=".activity.Register"
             android:exported="false" />
         <activity
-            android:name=".SignIn"
+            android:name=".activity.SignIn"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
