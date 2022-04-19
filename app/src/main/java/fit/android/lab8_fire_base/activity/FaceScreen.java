@@ -11,6 +11,12 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import fit.android.lab8_fire_base.R;
 import fit.android.lab8_fire_base.dao.UserDAO;
@@ -22,11 +28,14 @@ public class FaceScreen extends AppCompatActivity {
     private ImageButton btnHappy;
     private ImageButton btnUnHappy;
     private ImageButton btnNormal;
+    private DatabaseReference mDatabase;
+    private UserDAO dao;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_face_screen);
 
+        //get intent from sign in
         Intent intent = getIntent();
         String email = intent.getStringExtra("email");
 
@@ -41,13 +50,18 @@ public class FaceScreen extends AppCompatActivity {
                             AppDatabase.class, "user-manager").allowMainThreadQueries().build();
 
         //DAO
-        UserDAO dao = db.userDAO();
+        dao = db.userDAO();
         User user = dao.findByEmail(email);
 
-        Toast.makeText(FaceScreen.this, "HAPPY CLIKED = " +
-                        user.getHappy() + " UNHAPPY CLICKED = " +
-                        user.getUnhappy() + " NORMAL CLICKED = " +
-                        user.getNormal(), Toast.LENGTH_SHORT).show();
+        if(user != null) {
+            Toast.makeText(FaceScreen.this, "HAPPY CLIKED = " +
+                    user.getHappy() + " UNHAPPY CLICKED = " +
+                    user.getUnhappy() + " NORMAL CLICKED = " +
+                    user.getNormal(), Toast.LENGTH_SHORT).show();
+        }
+
+        //start firebase database
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
         //saving status from database when clicked icon
         btnHappy.setOnClickListener(new View.OnClickListener() {
@@ -60,9 +74,12 @@ public class FaceScreen extends AppCompatActivity {
                 }else {
                     user.setHappy(user.getHappy() + 1);
                     dao.update(user);
-
                 }
-                Toast.makeText(FaceScreen.this, ">>>>> HAPPY CLIKED => " + user.getHappy(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(FaceScreen.this, ">>>>> HAPPY CLIKED => "
+                                + user.getHappy(), Toast.LENGTH_SHORT).show();
+
+                //save data from sqlLite to FireBase
+                saveDataFromClientToFireBase();
             }
         });
 
@@ -77,7 +94,11 @@ public class FaceScreen extends AppCompatActivity {
                     dao.update(user);
                 }
 
-                Toast.makeText(FaceScreen.this, ">>>>> UNHAPPY CLIKED => " + user.getUnhappy(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(FaceScreen.this, ">>>>> UNHAPPY CLIKED => "
+                                + user.getUnhappy(), Toast.LENGTH_SHORT).show();
+
+                //save data from sqlLite to FireBase
+                saveDataFromClientToFireBase();
             }
         });
 
@@ -92,7 +113,11 @@ public class FaceScreen extends AppCompatActivity {
                     dao.update(user);
                 }
 
-                Toast.makeText(FaceScreen.this, ">>>>> NORMAL CLIKED => " + user.getNormal(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(FaceScreen.this, ">>>>> NORMAL CLIKED => "
+                                    + user.getNormal(), Toast.LENGTH_SHORT).show();
+
+                //save data from sqlLite to FireBase
+                saveDataFromClientToFireBase();
             }
         });
 
@@ -106,5 +131,20 @@ public class FaceScreen extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    private void saveDataFromClientToFireBase() {
+        List<User> users = dao.getAll();
+        Map<String, User> mapUsers = new HashMap<>();
+
+        for (User u : users) {
+            mapUsers.put(u.getEmail().split("@")[0], u);
+        }
+
+        try {
+            mDatabase.child("users").setValue(mapUsers);
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
