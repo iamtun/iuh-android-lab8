@@ -71,12 +71,15 @@ public class FaceScreen extends AppCompatActivity {
                 if(user == null)
                 {
                     dao.insert(new User(email, 1, 0, 0));
-                }else {
+                }
+                else {
                     user.setHappy(user.getHappy() + 1);
                     dao.update(user);
+
+                    //if code below out of block else then error because login first user = null
+                    Toast.makeText(FaceScreen.this, ">>>>> HAPPY CLIKED => "
+                            + user.getHappy(), Toast.LENGTH_SHORT).show();
                 }
-                Toast.makeText(FaceScreen.this, ">>>>> HAPPY CLIKED => "
-                                + user.getHappy(), Toast.LENGTH_SHORT).show();
 
                 //save data from sqlLite to FireBase
                 saveDataFromClientToFireBase();
@@ -92,10 +95,10 @@ public class FaceScreen extends AppCompatActivity {
                 else {
                     user.setUnhappy(user.getUnhappy() + 1);
                     dao.update(user);
-                }
 
-                Toast.makeText(FaceScreen.this, ">>>>> UNHAPPY CLIKED => "
-                                + user.getUnhappy(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(FaceScreen.this, ">>>>> UNHAPPY CLIKED => "
+                            + user.getUnhappy(), Toast.LENGTH_SHORT).show();
+                }
 
                 //save data from sqlLite to FireBase
                 saveDataFromClientToFireBase();
@@ -111,10 +114,10 @@ public class FaceScreen extends AppCompatActivity {
                 else {
                     user.setNormal(user.getNormal() + 1);
                     dao.update(user);
-                }
 
-                Toast.makeText(FaceScreen.this, ">>>>> NORMAL CLIKED => "
-                                    + user.getNormal(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(FaceScreen.this, ">>>>> NORMAL CLIKED => "
+                            + user.getNormal(), Toast.LENGTH_SHORT).show();
+                }
 
                 //save data from sqlLite to FireBase
                 saveDataFromClientToFireBase();
