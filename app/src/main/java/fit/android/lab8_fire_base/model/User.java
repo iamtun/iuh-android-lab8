@@ -62,4 +62,14 @@ public class User {
     public void setUnhappy(int unhappy) {
         this.unhappy = unhappy;
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "email='" + email + '\'' +
+                ", happy=" + happy +
+                ", normal=" + normal +
+                ", unhappy=" + unhappy +
+                '}';
+    }
 }

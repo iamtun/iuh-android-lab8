@@ -1,5 +1,6 @@
 package fit.android.lab8_fire_base.activity;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.room.Room;
 
@@ -11,8 +12,11 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
 import java.util.List;
@@ -45,12 +49,33 @@ public class FaceScreen extends AppCompatActivity {
         btnUnHappy = findViewById(R.id.btnUnHappy);
         btnNormal = findViewById(R.id.btnNormal);
 
+        //start firebase database
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+
+
         //start database
         AppDatabase db = Room.databaseBuilder(getApplicationContext(),
                             AppDatabase.class, "user-manager").allowMainThreadQueries().build();
 
         //DAO
         dao = db.userDAO();
+
+        //
+        if(dao.getAll().size() == 0) {
+            mDatabase.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    for (DataSnapshot sn : snapshot.getChildren()) {
+                        System.out.println(sn); //output data in Object map => key, value
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    System.out.println("The read failed: " + error.getCode());
+                }
+            });
+        }
         User user = dao.findByEmail(email);
 
         if(user != null) {
@@ -59,9 +84,6 @@ public class FaceScreen extends AppCompatActivity {
                     user.getUnhappy() + " NORMAL CLICKED = " +
                     user.getNormal(), Toast.LENGTH_SHORT).show();
         }
-
-        //start firebase database
-        mDatabase = FirebaseDatabase.getInstance().getReference();
 
         //saving status from database when clicked icon
         btnHappy.setOnClickListener(new View.OnClickListener() {
