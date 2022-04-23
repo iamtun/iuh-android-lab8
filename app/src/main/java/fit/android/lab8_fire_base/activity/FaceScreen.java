@@ -60,36 +60,16 @@ public class FaceScreen extends AppCompatActivity {
         //DAO
         dao = db.userDAO();
 
-        //
+        //if init app then get data from firebase insert to sqlite
         if(dao.getAll().size() == 0) {
-            mDatabase.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    for (DataSnapshot sn : snapshot.getChildren()) {
-                        System.out.println(sn); //output data in Object map => key, value
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    System.out.println("The read failed: " + error.getCode());
-                }
-            });
-        }
-        User user = dao.findByEmail(email);
-
-        if(user != null) {
-            Toast.makeText(FaceScreen.this, "HAPPY CLIKED = " +
-                    user.getHappy() + " UNHAPPY CLICKED = " +
-                    user.getUnhappy() + " NORMAL CLICKED = " +
-                    user.getNormal(), Toast.LENGTH_SHORT).show();
+            getDataFromFirebaseToSQLite();
         }
 
         //saving status from database when clicked icon
         btnHappy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                User user = getUserByEmail(email);
                 if(user == null)
                 {
                     dao.insert(new User(email, 1, 0, 0));
@@ -111,6 +91,7 @@ public class FaceScreen extends AppCompatActivity {
         btnUnHappy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                User user = getUserByEmail(email);
                 if(user == null) {
                     dao.insert(new User(email, 0, 0, 1));
                 }
@@ -130,6 +111,7 @@ public class FaceScreen extends AppCompatActivity {
         btnNormal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                User user = getUserByEmail(email);
                 if(user == null) {
                     dao.insert(new User(email, 0, 1, 0));
                 }
@@ -171,5 +153,38 @@ public class FaceScreen extends AppCompatActivity {
         }catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private User getUserByEmail(String email) {
+        User user = dao.findByEmail(email);
+
+        if(user != null) {
+            Toast.makeText(FaceScreen.this, "HAPPY CLIKED = " +
+                    user.getHappy() + " UNHAPPY CLICKED = " +
+                    user.getUnhappy() + " NORMAL CLICKED = " +
+                    user.getNormal(), Toast.LENGTH_SHORT).show();
+        }
+
+        return user;
+    }
+
+    private void getDataFromFirebaseToSQLite() {
+        mDatabase.child("users").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot sn : snapshot.getChildren()) {
+                    User us = sn.getValue(User.class);
+                    dao.insert(us);
+                }
+
+                System.out.println("======>GET DATA FROM FIRE SUCCESSFULLY!");
+                System.out.println("======> NUMBER USER: " + dao.getAll().size());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                System.out.println("The read failed: " + error.getCode());
+            }
+        });
     }
 }
